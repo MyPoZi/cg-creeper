@@ -1,11 +1,17 @@
-[200~/*  p4-RotateTeaPot.c
+/*  p4-RotateTeaPot.c
  *  Rotating tea pot
  */
 #include <stdlib.h>
 #include <GL/glut.h>
 #include <math.h>
 
+unsigned char mouseFlag = GL_FALSE;
 double	 theta = 0.0;						// angular of tea pot
+int Start;
+double angle = 0.0;
+
+double	sizeOfTeapot = 1.0;
+
 
 void myKeyboard( unsigned char key, int x, int y )
 {
@@ -47,6 +53,8 @@ void myDisplay(void)
 
 
 	glRotated(theta, 0.0, 1.0, 0.0);
+	glRotated(angle, 1.0, 0.0, 0.0);
+
 
 	glPushMatrix();
 
@@ -87,6 +95,56 @@ void myDisplay(void)
 
 }
 
+void myMouseMotion(int x, int y)
+{
+	int		xdis, ydis;
+	double	a = 0.1;
+
+	if (mouseFlag == GL_FALSE) return;
+	ydis = y - Start;
+	angle += (double)ydis * a;
+
+	Start = y;
+	glutPostRedisplay();
+}
+
+void myMouseFunc(int button, int state, int x, int y)
+{
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+		Start = y;
+		mouseFlag = GL_TRUE;
+	}
+	else {
+		mouseFlag = GL_FALSE;
+	}
+}
+
+void getValueFromMenu(int value)
+{
+	switch (value) {
+	case 1:
+		sizeOfTeapot = 0.5;
+		break;
+	case 2:
+		sizeOfTeapot = 1.0;
+		break;
+	case 3:
+		sizeOfTeapot = 2.0;
+		break;
+	default:
+		break;
+	}
+}
+
+void mySetMenu()
+{
+	glutCreateMenu(getValueFromMenu);
+	glutAddMenuEntry("x 0.5", 1);
+	glutAddMenuEntry("x 1.0", 2);
+	glutAddMenuEntry("x 2.0", 3);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
+}
+
 void myIdle(void)
 {
 	theta = fmod(theta + 0.001, 360.0);
@@ -115,9 +173,11 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv); 
 	myInit(argv[0]);
 	glutKeyboardFunc(myKeyboard);
+	glutMouseFunc(myMouseFunc);
+	glutMotionFunc(myMouseMotion);
+	mySetMenu();
 	glutIdleFunc(myIdle);
 	glutDisplayFunc(myDisplay);
 	glutMainLoop(); 
 	return 0;
 }
-

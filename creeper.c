@@ -11,11 +11,113 @@ double	sizeOfTeapot = 1.0;
 
 float light_pos[] = { 10, 10, 10, 10 };
 
-float mtrl_diffuse[] = { 0.6, 0.6, 0.6, 0.0 };
-float mtrl_specular[] = { 0.0, 1.0, 0.3, 0.0 };
-float mtrl_shininess[] = { 0.8 };					// range [0,128]
+float mtrl_diffuse[] = { 0.5, 0.5, 0.5, 0.0 };
+float mtrl_specular[] = { 0.0, 1.0, 0.0, 0.0 };
+float mtrl_shininess[] = { 0.8 };
 
+#define imageWidth		64
+#define imageHeight		64
 
+unsigned char texImage[imageHeight][imageWidth][4];
+
+void makeTexImage(void)
+{
+	int i, j, c;
+
+	for (i = 0; i < 16; i++) {
+		for (j = 8; j < 24; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+	}
+
+	for (i = 0; i < 16; i++) {
+		for (j = 40; j < 56; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+	}
+
+	for (i = 56; i < 64; i++) {
+		for (j = 56; j < 64; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+		for (j = 0; j < 8; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+	}
+
+	for (i = 48; i < 56; i++) {
+		for (j = 48; j < 64; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+		for (j = 0; j < 16; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+	}
+	for (i = 40; i < 48; i++) {
+		for (j = 48; j < 64; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+		for (j = 0; j < 16; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+	}
+
+	for (i = 33; i < 40; i++) {
+		for (j = 48; j < 56; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+		for (j = 8; j < 16; j++) {
+			texImage[i][j][0] = (unsigned char)255;
+			texImage[i][j][1] = (unsigned char)255;
+			texImage[i][j][2] = (unsigned char)255;
+			texImage[i][j][3] = (unsigned char)0;
+		}
+	}
+}
+
+void setupTextures(void)
+{
+	makeTexImage();
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageWidth, imageHeight, 0,
+		GL_RGBA, GL_UNSIGNED_BYTE, texImage);
+	glTexGenf(GL_S, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glTexGenf(GL_T, GL_TEXTURE_GEN_MODE, GL_OBJECT_LINEAR);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+}
 
 void myKeyboard( unsigned char key, int x, int y )
 {
@@ -24,13 +126,6 @@ void myKeyboard( unsigned char key, int x, int y )
 
 void mySetLight()
 {
-	//float light0_position[] = { 1.0,  1.0, 1.0, 1.0 };
-
-	/* LIGHT0 uses the default parameters except position */
-	//glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-	//glEnable(GL_LIGHT0);
-	/* Shading the both sides of box */
-	//glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	GLfloat light_diffuse[] = { 0.9, 0.9, 0.9, 1.0 };	// 拡散反射光
 	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };	// 鏡面反射光
 	GLfloat light_ambient[] = { 0.5, 1.0, 1.0, 0.6 };	// 環境光
@@ -72,80 +167,61 @@ void myFloor()
 
 void myDisplay(void)
 {
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mtrl_diffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, mtrl_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mtrl_shininess);
-
-	// glPushMatrix();
-
-	//glClearColor(0.2f, 0.2f, 0.2f, 1.0);					// 背景色
 	glMatrixMode(GL_MODELVIEW);
 
 	glEnable(GL_DEPTH_TEST);		// 隠面処理の適用
 	mySetLight();					// 光源の設定
 	glEnable(GL_LIGHTING);		// 光源ON
-	// glPopMatrix();
-
-
-
-
 
 	glPushMatrix();
 		glTranslated(0.0, -3.0, 0.0);
 		myFloor();
 	glPopMatrix();
 
-
 	glRotated(theta, 0.0, 1.0, 0.0);
 	glRotated(angle, 1.0, 0.0, 0.0);
 
-
 	glPushMatrix();
-
-
-
-
-
 
 	// head
 	glPushMatrix();
-		glColor3d(0.0, 1.0, 0.0);
+		glEnable(GL_TEXTURE_2D);
 		glutSolidCube(1.0);
+		glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
+
 	// body
 	glTranslated(0.0, -1.5, 0.0);
 	glPushMatrix();
-		glColor3d(0.0, 1.0, 0.0);
+		glColor3d(1.0, 1.0, 0.0);
 		glScaled(0.9, 2.0, 0.5);
 		glutSolidCube(1.0);
 	glPopMatrix();
+
 	// foot1
 	glTranslated(0.0, -1.5, 0.0);
 	glPushMatrix();
-		glColor3d(1.0, 1.0, 1.0);
+		glColor3d(0.0, 1.0, 0.0);
 		glTranslated(0.0, 0.0, 0.5);
 		glScaled(0.9, 1.0, 0.5);
 		glutSolidCube(1.0);
 	glPopMatrix();
+
 	// foot2
 		glPushMatrix();
-		glColor3d(1.0, 1.0, 1.0);
+		glColor3d(0.0, 1.0, 0.0);
 		glTranslated(0.0, 0.0, -0.5);
 		glScaled(0.9, 1.0, 0.5);
 		glutSolidCube(1.0);
 	glPopMatrix();
 
-
 	glPopMatrix();
-
-
-
     glutSwapBuffers();
-
-
 }
 
 
@@ -177,13 +253,28 @@ void getValueFromMenu(int value)
 {
 	switch (value) {
 	case 1:
-		sizeOfTeapot = 0.5;
+		mtrl_specular[0] = 0.0;
+		mtrl_specular[1] = 1.0;
+		mtrl_specular[2] = 0.0;
+		mtrl_specular[3] = 0.0;
 		break;
 	case 2:
-		sizeOfTeapot = 1.0;
+		mtrl_specular[0] = 0.0;
+		mtrl_specular[1] = 0.0;
+		mtrl_specular[2] = 1.0;
+		mtrl_specular[3] = 0.0;
 		break;
 	case 3:
-		sizeOfTeapot = 2.0;
+		mtrl_specular[0] = 1.0;
+		mtrl_specular[1] = 0.0;
+		mtrl_specular[2] = 0.0;
+		mtrl_specular[3] = 0.0;
+		break;
+	case 4:
+		mtrl_specular[0] = 1.0;
+		mtrl_specular[1] = 1.0;
+		mtrl_specular[2] = 0.0;
+		mtrl_specular[3] = 0.0;
 		break;
 	default:
 		break;
@@ -193,9 +284,10 @@ void getValueFromMenu(int value)
 void mySetMenu()
 {
 	glutCreateMenu(getValueFromMenu);
-	glutAddMenuEntry("x 0.5", 1);
-	glutAddMenuEntry("x 1.0", 2);
-	glutAddMenuEntry("x 2.0", 3);
+	glutAddMenuEntry("green", 1);
+	glutAddMenuEntry("blue", 2);
+	glutAddMenuEntry("red", 3);
+	glutAddMenuEntry("yellow", 4);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
@@ -213,7 +305,7 @@ void myInit (char *progname)
 	glutInitWindowSize( width, height);
 	glutInitWindowPosition(0, 0); 
 	glutCreateWindow(progname);
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0);					// 背景色
+	glClearColor(0.2f, 0.2f, 0.2f, 1.0); // 背景
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(90.0, (double)width/(double)height, 0.1, 20.0);
@@ -226,6 +318,7 @@ int main(int argc, char** argv)
 {
 	glutInit(&argc, argv); 
 	myInit(argv[0]);
+	setupTextures();
 	glutKeyboardFunc(myKeyboard);
 	glutMouseFunc(myMouseFunc);
 	glutMotionFunc(myMouseMotion);
